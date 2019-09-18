@@ -95,7 +95,7 @@ WHERE make LIKE 'a%r'
 SELECT *
 FROM cars_data
 WHERE cylinders > 6
-  AND weight BETWEEN 3001 AND 3999
+  AND weight > 3000 AND weight < 4000  
   AND YEAR NOT IN (1970,
                    1975,
                    1981) ;
