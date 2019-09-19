@@ -38,3 +38,6 @@ SELECT * FROM car_makers WHERE id='11';
 
 ---10. List all car makers not from sweden, japan, france or germany.
 
+SELECT id FROM countries WHERE name in ('sweden','japan','france', 'germany');
+
+SELECT maker FROM car_makers WHERE country NOT IN ( 2,3,4,6 );
