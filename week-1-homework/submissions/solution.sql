@@ -48,7 +48,7 @@ WHERE id IN
 --- 6. How many car models are audi?
 SELECT count(id)
 FROM car_names
-WHERE model LIKE '%audi%';
+WHERE model = 'audi';
  --- result: 7
 
 --- 7. List all makers whose names start with s.
@@ -60,8 +60,8 @@ WHERE maker LIKE 's%';
 --- 8. How many cars have a horsepower more than 100 but less than 200?
 SELECT COUNT(id)
 FROM cars_data
-WHERE horsepower BETWEEN 100 AND 200;
---- result: 164 rows returned
+WHERE horsepower > 100 AND horsepower < 200;
+--- result: 146 rows returned
 
 --- 9. List all car makers from australia.
 SELECT maker
