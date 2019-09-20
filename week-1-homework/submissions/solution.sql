@@ -65,7 +65,8 @@ WHERE full_name LIKE 's%';
 
 SELECT COUNT(*)
 FROM cars_data
-WHERE horsepower BETWEEN 100 AND 200;
+WHERE horsepower > 100
+  AND horsepower < 200;
 
 -- 9. List all car makers from australia.
 
@@ -107,7 +108,8 @@ WHERE maker LIKE 'a%r';
 SELECT COUNT(*)
 FROM cars_data
 WHERE cylinders > 6
-  AND weight BETWEEN 3000 AND 4000
-  AND YEAR NOT IN(1970,
-                  1975,
-                  1981);
+  AND weight > 3000
+  AND weight < 4000
+  AND year NOT IN (1970,
+                   1975,
+                   1981);
