@@ -21,8 +21,7 @@ function connect() {
 
 function query(queryString, params) {
   return new Promise((resolve, reject) => {
-    console.log(`Query String`, queryString);
-    console.log(`Params`, params);
+    console.log(queryString, params);
 
     connection.query({
       sql: queryString,

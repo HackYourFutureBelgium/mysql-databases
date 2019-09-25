@@ -5,11 +5,11 @@ const util = require('util')
 // we connect to mysql via the create connection.
 // Exercise: find a library that allows you to have those values in a config file
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'YOUR USER WITH PRIVILEGES TO INSERT UPDATE',
-    password: 'YOUR PASSWORD HERE',
-    port: '3306',
-    database: 'world'
+  host: 'localhost',
+  user: 'root',
+  password: 'password',
+  port: '3306',
+  database: 'world'
 });
 
 // a query to expose the connection in a promisified way
@@ -30,6 +30,6 @@ async function rollback() {
   connection.rollback();
 }
 
-module.exports = {
+module.exports = {
   query, beginTransaction, commit, rollback
 };

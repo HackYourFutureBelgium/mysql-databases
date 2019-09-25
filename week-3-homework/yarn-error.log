@@ -1,0 +1,56 @@
+Arguments: 
+  /Users/master/.nvm/versions/node/v7.4.0/bin/node /usr/local/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js add
+
+PATH: 
+  /Users/master/anaconda3/bin:/Users/master/.rvm/gems/ruby-2.4.0/bin:/Users/master/.rvm/gems/ruby-2.4.0@global/bin:/Users/master/.rvm/rubies/ruby-2.4.0/bin:/Users/master/.nvm/versions/node/v7.4.0/bin:/Users/master/Documents/research/torch/install/bin/luajit:/Users/master/Documents/research/torch/install/bin/:home/user/torch/install/bin/:/Users/master/Documents/research/torch/install/bin/torch-activate:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Users/master/.rvm/bin
+
+Yarn version: 
+  1.5.1
+
+Node version: 
+  7.4.0
+
+Platform: 
+  darwin x64
+
+npm manifest: 
+  {
+    "name": "week3exercise",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+      "async": "^3.1.0",
+      "body-parser": "^1.19.0",
+      "express": "^4.17.1",
+      "mysql": "^2.17.1",
+      "path": "^0.12.7",
+      "pug": "^2.0.0",
+      "q": "^1.5.1",
+      "util": "^0.12.1"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  Error: Missing list of packages to add to your project.
+      at new MessageError (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:186:110)
+      at Object.<anonymous> (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:40587:13)
+      at Generator.next (<anonymous>)
+      at step (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:98:30)
+      at /usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:116:14
+      at F (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:23451:28)
+      at Object.<anonymous> (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:95:12)
+      at Object.run (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:40599:19)
+      at run (/usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:89113:20)
+      at /usr/local/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:89423:14
