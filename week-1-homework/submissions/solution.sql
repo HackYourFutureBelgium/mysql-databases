@@ -4,7 +4,7 @@ SELECT id
 FROM cars_data
 ORDER BY accelerate DESC
 LIMIT 1;
-
+  
 
 SELECT model
 FROM car_names
