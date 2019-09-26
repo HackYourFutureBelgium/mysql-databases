@@ -26,15 +26,21 @@ WHERE Capital IS NULL;
 --- result: 7 row(s) returned
 
 --- 4 Which country has the lowest population? List all if more than one
-SELECT 
-ROW_NUMBER() OVER ( ORDER BY Name ) List_Num, 
-Name AS Country_Lowest_Population,
-       Population
-FROM country
+SELECT ROW_NUMBER() OVER (
+                          ORDER BY Name) List_Num,
+                         Name AS Country_Lowest_Population,
+                         Population
+FROM
+  (SELECT *
+   FROM country
+   WHERE population > 0) AS SQ1
 WHERE population =
     (SELECT min(population)
-     FROM country);
---- result: 7 row(s) returned with population 0.
+     FROM
+       (SELECT population
+        FROM country
+        WHERE population > 0) AS SQ1);
+--- result: 1 row(s) returned -> 'Pitcairn'with 50 persons.
 
 --- 5 What are the names of all the cities in Vietnam?
 SELECT 
