@@ -4,7 +4,6 @@ const userManager = require('../../userManager');
 
 function deleteTodo(request, response) {
   const id = request.params.id;
-
   userManager.delete(id)
     .then(() => {
       response.status(204);

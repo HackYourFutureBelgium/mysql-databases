@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 'use strict';
 
 const userManager = require('../../userManager');
@@ -12,7 +13,6 @@ function updateTodo(request, response) {
       }
 
       const id = request.params.id;
-
       return userManager.update(id, { description, birthday });
     })
     .then(todo => {

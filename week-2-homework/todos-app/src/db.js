@@ -5,7 +5,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'hyfuser',
   password: 'hyfpassword',
-  database: 'hyf_c5_w1_cars'
+  database: 'hyf_db_w2_todo'
 });
 
 function connect() {
@@ -22,11 +22,10 @@ function connect() {
 function query(queryString, params) {
   return new Promise((resolve, reject) => {
     console.log(queryString, params);
-
     connection.query({
       sql: queryString,
       values: params
-    }, function(error, results) {
+    }, (error, results) => {
       if (error) {
         return reject(error);
       }

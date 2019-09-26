@@ -5,14 +5,7 @@ const todoManager = require('../todoManager');
 
 function getTodos(request, response) {
   userManager.get(request.params.user_id)
-    .then(user => {
-      if (!user) {
-        const error = new Error('no such user');
-        error.code = 'not-found';
-
-        throw error;
-      }
-
+    .then(() => {
       return todoManager.usersTodos(request.params.user_id);
     })
     .then(todos => {

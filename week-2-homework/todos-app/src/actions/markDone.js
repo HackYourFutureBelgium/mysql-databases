@@ -1,17 +1,15 @@
+/* eslint-disable max-len */
 'use strict';
 
-const deserializeTodo = require('./deserializeTodo');
 const todoManager = require('../todoManager');
 const userManager = require('../userManager');
 
-function updateTodo(request, response) {
+function markDone(request, response) {
   userManager.get(request.params.user_id)
     .then(() => {
-      return deserializeTodo(request, response);
-    })
-    .then(({ description }) => {
       const id = request.params.id;
-      return todoManager.update(id, description);
+      let url = request.url.toLowerCase().indexOf('notdone');
+      return todoManager.setMarkDone(id, url);
     })
     .then(todo => {
       response.status(200);
@@ -23,4 +21,4 @@ function updateTodo(request, response) {
     });
 }
 
-module.exports = updateTodo;
+module.exports = markDone;

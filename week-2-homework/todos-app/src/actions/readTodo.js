@@ -1,17 +1,13 @@
 'use strict';
 
-const deserializeTodo = require('./deserializeTodo');
 const todoManager = require('../todoManager');
 const userManager = require('../userManager');
 
-function updateTodo(request, response) {
+function readTodo(request, response) {
   userManager.get(request.params.user_id)
     .then(() => {
-      return deserializeTodo(request, response);
-    })
-    .then(({ description }) => {
       const id = request.params.id;
-      return todoManager.update(id, description);
+      return todoManager.getTodo(id);
     })
     .then(todo => {
       response.status(200);
@@ -23,4 +19,4 @@ function updateTodo(request, response) {
     });
 }
 
-module.exports = updateTodo;
+module.exports = readTodo;

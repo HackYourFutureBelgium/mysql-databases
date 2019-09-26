@@ -1,68 +1,106 @@
-const fs = require('fs').promises;
-const uuid = require('uuid/v4');
+/* eslint-disable max-len */
+'use strict';
 
-const DEFAULT_ENCODING = 'utf8';
+const uuid = require('uuid/v4');
+const Db = require('./db');
 
 class TodoManager {
-  constructor(filename) {
-    this._filename = filename;
-  }
-
   async usersTodos(userId) {
-    const todos = await this.read();
-    return todos.filter(t => t.user_id === userId);
-  }
+    const todos = await this.selectUserTodos(userId);
 
-  async create({ userId, description }) {
-    const todos = await this.read();
-    const todo = {
-      id: uuid(),
-      user_id: userId,
-      done: false,
-      description
-    };
-    todos.push(todo);
-    await this.write(todos);
-    return todo;
-  }
-
-  async update({ id, description }) {
-    const todos = await this.read();
-
-    const todo = todos.find(t => t.id === id);
-
-    if (!todo) {
-      const error = new Error(`To-do with ID ${id} does not exist`);
+    if (todos.length === 0) {
+      const error = new Error(`The user with ${userId} does not have  TODOS`);
       error.code = 'not-found';
       throw error;
     }
 
-    todo.description = description;
-    await this.write(todos);
+    return todos;
+  }
+
+  async getTodo(id) {
+    const todos = await this.selectTodo(id);
+    const todo = todos.find(t => t.id === id);
+    if (todo === undefined) {
+      const error = new Error(`Todo with ID ${id} does not exist`);
+      error.code = 'not-found';
+      throw error;
+    }
 
     return todo;
   }
 
-  async delete({ id }) {
-    const todos = await this.read();
-    const filteredTodos = todos.filter(t => t.id !== id);
+  async create(userId, description) {
+    const id = uuid();
+    await this.insertTodo(id, description, userId);
 
-    return this.write(filteredTodos);
+    return this.getTodo(id);
   }
 
-  read() {
-    return fs.readFile(this._filename, DEFAULT_ENCODING)
-      .then((contents) => JSON.parse(contents))
-      .catch((err) => {
-        if (err.code === 'ENOENT') return [];
-        else throw err;
-      });
+  async update(id, description) {
+    await this.getTodo(id);
+    await this.updateTodo(id, description);
+
+    return this.getTodo(id);
   }
 
-  write(todos) {
-    // third argument of stringify is nr of spaces indentation for readability
-    return fs.writeFile(this._filename, JSON.stringify(todos, null, 2));
+  async delete(id) {
+    await this.getTodo(id);
+    await this.deleteTodo(id);
+  }
+
+  async setMarkDone(id, url) {
+    await this.getTodo(id);
+    const todo = await this.selectTodoMarkState(id);
+    const state = todo[0].state;
+
+    if (url < 0) {
+      if (state === 1) {
+        const error = new Error(`Todo with ID ${id} is already with state done`);
+        error.code = 'not-found';
+        throw error;
+      }
+      await this.updateTodoMark(id, state);
+    }
+    else {
+      if (state === 0) {
+        const error = new Error(`Todo with ID ${id} is already with state not done`);
+        error.code = 'not-found';
+        throw error;
+      }
+      await this.updateTodoMark(id, state);
+    }
+    return this.getTodo(id);
+  }
+
+  //  CRUD
+  selectTodo(id) {
+    return Db.query(`SELECT * FROM activities WHERE id = '${id}'`);
+  }
+
+  selectUserTodos(userId) {
+    return Db.query(`SELECT * FROM activities WHERE user = '${userId}'`);
+  }
+
+  selectTodoMarkState(id) {
+    return Db.query(`SELECT state FROM activities WHERE id = '${id}'`);
+  }
+
+  insertTodo(id, description, userId) {
+    return Db.query(`INSERT INTO activities (id,description,user) values ('${id}','${description}','${userId}')`);
+  }
+
+  updateTodo(id, description) {
+    return Db.query(`UPDATE activities SET description= '${description}'WHERE id = '${id}'`);
+  }
+
+  updateTodoMark(id, state) {
+    state === 1 ? state = 0 : state = 1;
+    return Db.query(`UPDATE activities SET state= '${state}' WHERE id = '${id}'`);
+  }
+
+  deleteTodo(id) {
+    return Db.query(`DELETE FROM activities WHERE id = '${id}'`);
   }
 }
 
-module.exports = new TodoManager('./todos.json');
+module.exports = new TodoManager();

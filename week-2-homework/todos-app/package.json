@@ -1,10 +1,10 @@
 {
-  "name": "hyf-node-week-3-homework",
+  "name": "hyf-db-week-2-homework",
   "version": "1.0.0",
-  "description": "HackYourFuture Node.js Week 3 - Homework",
-  "repository": "https://github.com/HackYourFuture/nodejs.git",
+  "description": "HackYourFuture DataBases Week 2 - Homework",
+  "repository": "https://github.com/NelsonNaja/databases.git",
   "main": "src/index.js",
-  "author": "George Sapkin",
+  "author": "Nelson N.",
   "license": "MIT",
   "devDependencies": {
     "eslint": "^4.2.0",
