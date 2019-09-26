@@ -41,6 +41,26 @@ app.get('/models/:model_name/cars', (req, res) => {
     });
 });
 
+app.post('/models', (req, res) => {
+  const id = req.body.model.id;
+  const maker = req.body.model.maker;
+  const name = req.body.model.name;
+  const s_name = JSON.stringify(name);
+  console.log(id, maker, name);
+
+  Db.query(
+    `insert into car_makers (id, maker, full_name)
+    values (${id}, ${maker}, ${s_name});`
+  ).then(Db.query(`select * from car_makers where id = ${id};`))
+    .then(result => {
+      res.json(result);
+    })
+    .catch(err => {
+      res.status(500)
+        .json(err);
+    });
+});
+
 async function main() {
   console.log(process.argv);
 
