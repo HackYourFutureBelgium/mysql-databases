@@ -19,7 +19,8 @@ const {
   updateTodo,
   deleteTodo,
   readTodo,
-  markDone
+  markDone,
+  notMarkDone
 } = require('./actions');
 
 const PORT = 3030;
@@ -45,7 +46,7 @@ app.get(`/${USERS}/`, readUsers);
 app.get(`/${USERS}/:id`, readUser);
 app.get(`/${USERS}/:user_id/${TODOS}/:id`, readTodo);
 app.put(`/${USERS}/:user_id/${TODOS}/:id/done`, markDone);
-app.put(`/${USERS}/:user_id/${TODOS}/:id/notdone`, markDone);
+app.put(`/${USERS}/:user_id/${TODOS}/:id/notdone`, notMarkDone);
 
 Db.connect()
   .then(() => {

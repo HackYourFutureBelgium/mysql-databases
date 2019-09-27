@@ -7,5 +7,6 @@ module.exports = {
   updateTodo: require('./updateTodo'),
   deleteTodo: require('./deleteTodo'),
   readTodo: require('./readTodo'),
-  markDone: require('./markDone')
+  markDone: require('./markDone'),
+  notMarkDone: require('./notmarkDone')
 };

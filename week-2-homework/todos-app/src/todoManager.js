@@ -9,7 +9,7 @@ class TodoManager {
     const todos = await this.selectUserTodos(userId);
 
     if (todos.length === 0) {
-      const error = new Error(`The user with ${userId} does not have  TODOS`);
+      const error = new Error(`The user with ID introduced does not have activities TODO yet`);
       error.code = 'not-found';
       throw error;
     }
@@ -17,64 +17,70 @@ class TodoManager {
     return todos;
   }
 
-  async getTodo(id) {
-    const todos = await this.selectTodo(id);
-    const todo = todos.find(t => t.id === id);
-    if (todo === undefined) {
-      const error = new Error(`Todo with ID ${id} does not exist`);
+  async getTodo(userid, id) {
+    const todos = await this.selectTodo(userid, id);
+
+    if (todos[0] === undefined) {
+      const error = new Error(`Todo with ID ${id} does not exist or dont belong to this user.`);
       error.code = 'not-found';
       throw error;
     }
 
-    return todo;
+    return todos[0];
   }
 
   async create(userId, description) {
     const id = uuid();
     await this.insertTodo(id, description, userId);
 
-    return this.getTodo(id);
+    return this.getTodo(userId, id);
   }
 
-  async update(id, description) {
-    await this.getTodo(id);
-    await this.updateTodo(id, description);
+  async update(userId, id, description) {
+    await this.getTodo(userId, id);
+    await this.updateTodo(userId, id, description);
 
-    return this.getTodo(id);
+    return this.getTodo(userId, id);
   }
 
-  async delete(id) {
-    await this.getTodo(id);
-    await this.deleteTodo(id);
+  async delete(userId, id) {
+    await this.getTodo(userId, id);
+    await this.deleteTodo(userId, id);
   }
 
-  async setMarkDone(id, url) {
-    await this.getTodo(id);
+  async setMarkDone(userId, id) {
+    await this.getTodo(userId, id);
     const todo = await this.selectTodoMarkState(id);
     const state = todo[0].state;
 
-    if (url < 0) {
-      if (state === 1) {
-        const error = new Error(`Todo with ID ${id} is already with state done`);
-        error.code = 'not-found';
-        throw error;
-      }
-      await this.updateTodoMark(id, state);
+    if (state === 1) {
+      const error = new Error(`Todo selected is already with state done`);
+      error.code = 'bad-request';
+      throw error;
     }
-    else {
-      if (state === 0) {
-        const error = new Error(`Todo with ID ${id} is already with state not done`);
-        error.code = 'not-found';
-        throw error;
-      }
-      await this.updateTodoMark(id, state);
+    await this.updateTodoMark(userId, id);
+
+    return this.getTodo(userId, id);
+  }
+
+  async setNotMarkDone(userId, id) {
+    await this.getTodo(userId, id);
+    const todo = await this.selectTodoMarkState(id);
+    const state = todo[0].state;
+
+    if (state === 0) {
+      const error = new Error(`Todo selected is already with state not done`);
+      error.code = 'bad-request';
+      throw error;
     }
-    return this.getTodo(id);
+    await this.updateTodoNotMark(userId, id);
+
+    return this.getTodo(userId, id);
   }
 
   //  CRUD
-  selectTodo(id) {
-    return Db.query(`SELECT * FROM activities WHERE id = '${id}'`);
+  selectTodo(userid, id) {
+    return Db.query(`SELECT * FROM activities WHERE id = '${id}' and user = '${userid}'`);
   }
 
   selectUserTodos(userId) {
@@ -89,17 +95,20 @@ class TodoManager {
     return Db.query(`INSERT INTO activities (id,description,user) values ('${id}','${description}','${userId}')`);
   }
 
-  updateTodo(id, description) {
-    return Db.query(`UPDATE activities SET description= '${description}'WHERE id = '${id}'`);
+  updateTodo(userid, id, description) {
+    return Db.query(`UPDATE activities SET description= '${description}' WHERE id = '${id}' and user ='${userid}'`);
   }
 
-  updateTodoMark(id, state) {
-    state === 1 ? state = 0 : state = 1;
-    return Db.query(`UPDATE activities SET state= '${state}' WHERE id = '${id}'`);
+  updateTodoMark(userid, id) {
+    return Db.query(`UPDATE activities SET state= 1 WHERE id = '${id}' and user='${userid}'`);
   }
 
-  deleteTodo(id) {
-    return Db.query(`DELETE FROM activities WHERE id = '${id}'`);
+  updateTodoNotMark(userid, id) {
+    return Db.query(`UPDATE activities SET state= 0 WHERE id = '${id}' and user='${userid}'`);
+  }
+
+  deleteTodo(userid, id) {
+    return Db.query(`DELETE FROM activities WHERE id = '${id}' and user='${userid}'`);
   }
 }
 

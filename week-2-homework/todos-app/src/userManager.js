@@ -10,6 +10,7 @@ class UserManager {
 
     if (users.length === 0) {
       const error = new Error(`Sorry!, We don't have users yet.`);
+      error.code = 'no-content';
       throw error;
     }
 
@@ -21,7 +22,7 @@ class UserManager {
 
     if (user.length) {
       const error = new Error(`${username} already exists`);
-      error.code = 'already-exists';
+      error.code = 'conflict';
       throw error;
     }
 
@@ -34,7 +35,7 @@ class UserManager {
     const user = users.find(t => t.id === id);
 
     if (user === undefined) {
-      const error = new Error(`User with ID ${id} does not exist`);
+      const error = new Error(`User with ID introduced does not exist`);
       error.code = 'not-found';
       throw error;
     }

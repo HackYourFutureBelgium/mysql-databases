@@ -12,8 +12,8 @@ function getTodos(request, response) {
       response.json({ todos });
       response.end();
     })
-    .catch(({ message }) => {
-      response.status(500);
+    .catch(({ code, message }) => {
+      response.status(code === 'not-found' ? 404 : 500);
       response.json({ error: message });
     });
 }

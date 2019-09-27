@@ -8,12 +8,12 @@ function readUsers(request, response) {
     .then(() => {
       return userManager.getUsers();
     })
-    .then(todos => {
+    .then(users => {
       response.status(201);
-      response.json({ todos });
+      response.json({ users });
     })
     .catch(({ code, message }) => {
-      response.status(code === 'already-exists' ? 404 : 500);
+      response.status(code === 'no-content' ? 204 : code === 'already-exists' ? 404 : 500);
       response.json({ error: message });
     });
 }

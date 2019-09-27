@@ -9,12 +9,12 @@ function readUser(request, response) {
       const id = request.params.id;
       return userManager.get(id);
     })
-    .then(todo => {
+    .then(user => {
       response.status(201);
-      response.json({ todo });
+      response.json({ user });
     })
     .catch(({ code, message }) => {
-      response.status(code === 'already-exists' ? 404 : 500);
+      response.status(code === 'not-found' ? 404 : 500);
       response.json({ error: message });
     });
 }

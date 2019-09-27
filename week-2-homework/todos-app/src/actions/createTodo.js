@@ -14,10 +14,10 @@ function createTodo(request, response) {
     })
     .then(todo => {
       response.status(201);
-      response.json({ todo: todo });
+      response.json({ todo });
     })
     .catch((err) => {
-      response.status(err.code ? 400 : 500);
+      response.status(err.code === 'not-found' ? 404 : err.code ? 400 : 500);
       response.json({ error: err.message });
     });
 }
