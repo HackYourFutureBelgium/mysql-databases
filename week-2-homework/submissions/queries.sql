@@ -5,6 +5,7 @@
 select sum(Population) as worldPopulation
 from country;
 
+
 ---2 What is the name and the population of the most populated city in India?
 select name, population
 from city
@@ -103,5 +104,3 @@ from films
 group by director
 having count(director) > 2;
 
-
-select
