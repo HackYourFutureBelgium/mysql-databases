@@ -74,13 +74,11 @@ GROUP BY city.District;
 --- result: 45 row(s) returned.
 
 --- 8 Find the name of the cities that appear more than 2 times in the table. 
-SELECT CityName 
-FROM
-  (SELECT name AS CityName,
-          count(name) AS Count
-   FROM city
-   GROUP BY name) AS SQ1
-WHERE Count>=2 ;
+SELECT name AS CityName,
+       count(name) AS COUNT
+FROM city
+GROUP BY name
+HAVING COUNT>=2
 --- result: 65 row(s) returned
 
 --- 9 Find all the names of the districts in the Netherlands. (names should appear only once)
@@ -104,12 +102,11 @@ GROUP BY gender;
 --- result: 2 row(s) returned
 
 --- 2 Find how many actors are in their 20’s, 30’s, 40’s, 50’s etc (grouped by decade). 
-SELECT Age,
+SELECT  floor(age/10)*10 AS Age2,
        count(Age)
 FROM
-  (SELECT floor(age/10)*10 AS Age
-   FROM actors) AS SQ1
-GROUP BY Age
+actors
+GROUP BY Age2
 ORDER BY Age;
 --- result: 6 row(s) returned
 
@@ -119,10 +116,8 @@ FROM actors ;
 --- result: 9 row(s) returned
 
 --- 4 Find the names of the directors who have more than 2 films in the database.
-SELECT director
-FROM
-  (SELECT director,
-          count(director) AS Movies
-   FROM films
-   GROUP BY director) AS SQ1
-WHERE Movies >=2;
+SELECT director,
+       count(director) AS cdirector
+FROM films
+GROUP BY director
+HAVING cdirector > 1 ;
