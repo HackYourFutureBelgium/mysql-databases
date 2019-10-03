@@ -35,7 +35,7 @@ app.post('/', (req, res) => {
     });
 });
 
-app.patch('/id', (req, res) => {
+app.patch('/:id', (req, res) => {
   const id = req.params.id;
   const description = req.body.todo.description;
 
