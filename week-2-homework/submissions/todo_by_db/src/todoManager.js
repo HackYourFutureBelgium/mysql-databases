@@ -4,7 +4,7 @@ const uuid = require('uuid/v4');
 
 
 class TodoManager {
-  async usresTodos (userId) {
+  async usersTodos (userId) {
     const todos = await this.selectUsersTodos(userId);
     if (todos.length === 0) {
       const error = new Error(`The user with ID introduced does not have activities TODO yet`);
@@ -16,7 +16,7 @@ class TodoManager {
 }
 
   async getTodo (userid, id) {
-    const todos = await this.selectUsersTodos(userid, id);
+    const todos = await this.selectTodo(userid, id);
     if (todos[0] === undefined) {
       const error = new Error(`Todo with Id ${id} does not exist or do not belong to the user`);
       error.code = 'not-found';
@@ -29,12 +29,14 @@ class TodoManager {
     const id = uuid();
     await this.insertTodo(id, description, userId);
 
-    return this.getTodo(userId, description);
+    return this.getTodo(userId, id);
   }
 
   async update (userId, id, description) {
     await this.getTodo(userId, id);
     await this.updateTodo(userId, id, description);
+
+    return this.getTodo(userId, id);
   }
 
   async delete (userId, id) {
@@ -63,7 +65,7 @@ class TodoManager {
     const todo = await this.selectTodoMarkState(id);
     const state = todo[0].state;
 
-    if (state = 0) {
+    if (state === 0) {
       const error = new Error(`Todo selected is already with state not done`);
       error.code = 'bad-request';
       throw error;
@@ -78,7 +80,7 @@ class TodoManager {
     return Db.query(`select * from activities where id = '${id}' and user = '${userid}'`)
   }
   selectUsersTodos (userId) {
-    return Db.query(`select * from activities where user = ${userId}`);
+    return Db.query(`select * from activities where user = '${userId}'`);
   }
 
   insertTodo (id, description, userId) {
@@ -87,7 +89,7 @@ class TodoManager {
   }
 
   updateTodo (userid, id, description) {
-    return Db.query(`update activities set description = ${description}
+    return Db.query(`update activities set description = '${description}'
       where id = '${id}' and user = '${userid}'`);
   }
 
@@ -104,7 +106,7 @@ class TodoManager {
   }
 
   updateTodoNotMark (userid, id) {
-    return Db.query(`update activities set state = 0 where id = '${id}' user = '${userid}'`);
+    return Db.query(`update activities set state = 0 where id = '${id}' and user = '${userid}'`);
   }
 };
 

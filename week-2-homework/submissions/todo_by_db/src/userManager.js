@@ -66,7 +66,7 @@ class userManager {
 
   // CRUD
   selectUsers () {
-    Db.query(`select * from users`);
+    return Db.query(`select * from users`);
   }
 
   selectUser (username) {
@@ -87,6 +87,10 @@ class userManager {
 
   updateBirthday (id, birthday) {
     return Db.query(`update users set birthday = '${birthday}' where id = '${id}'`);
+  }
+
+  updateDescription (id, description) {
+    return Db.query(`update users set description = '${description}' where id = '${id}'`);
   }
 
   deleteUser (id) {

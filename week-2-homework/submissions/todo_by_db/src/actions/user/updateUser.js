@@ -15,13 +15,13 @@ function updateUser (req, res) {
 
       const id = req.params.id;
 
-      return userManager.updateUser(id, { description, birthday });
+      return userManager.update(id, { description, birthday });
     })
     .then(user => {
       res.status(200);
       res.json({ user });
     })
-    .catch(({ message, code }) => {
+    .catch(({ code, message }) => {
       res.status(code === 'not-found' ? 404 : code === 'bad-request' ? 400 : 500);
       res.json({ error: message });
     });
