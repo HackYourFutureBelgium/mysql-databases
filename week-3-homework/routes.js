@@ -14,11 +14,11 @@ app.get('/', (req, res) => {
 })
 
 app.get('/:id', (req, res) => {
-  const id = 'parse the description from the request';
+  const id = req.params.id;
   connectedModel.read(id, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage);
     } else {
       console.log('create successful');
       res.send(result);
@@ -27,11 +27,12 @@ app.get('/:id', (req, res) => {
 });
 
 app.post('/', (req, res) => {
-  const description = 'parse the description from the request';
-  connectedModel.create(description, (err, result) => {
+  const {user_id } = req.body.todo;
+  const { description } = req.body.todo;
+  connectedModel.create(user_id, description, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage);
     } else {
       console.log('create successful');
       res.send(result);
@@ -40,12 +41,13 @@ app.post('/', (req, res) => {
 });
 
 app.patch('/', (req, res) => {
-  const id = 'parse the id from the request';
-  const description = 'parse the description from the request';
+  const todo = req.body.todo;
+  const id = todo.todo_id;
+  const description = todo.description;
   connectedModel.update(id, description, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage)
     } else {
       console.log('update successful');
       res.send(result);
@@ -54,11 +56,11 @@ app.patch('/', (req, res) => {
 });
 
 app.delete('/', (req, res) => {
-  const id = 'parse the id from the request';
+  const id = req.body.todo.todo_id;
   connectedModel.delete(id, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage)
     } else {
       console.log('delete successful');
       res.send(result);
@@ -67,12 +69,13 @@ app.delete('/', (req, res) => {
 });
 
 app.post('/tagTodoItem', (req, res) => {
-  const itemId = 'parse the id from the request';
-  const tagId = 'parse the id from the request';
+  const tag_todo_item = req.body.tag_todo_item;
+  const itemId = tag_todo_item.item_id;
+  const tagId = tag_todo_item.tag_id;
   connectedModel.tagTodoItem(itemId, tagId, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage)
     } else {
       console.log('tag successful');
       res.send(result);
@@ -81,12 +84,14 @@ app.post('/tagTodoItem', (req, res) => {
 });
 
 app.delete('/untagTodoItem', (req, res) => {
-  const itemId = 'parse the id from the request';
-  const tagId = 'parse the id from the request';
+  const tag_todo_item = req.body.tag_todo_item;
+  const itemId = tag_todo_item.item_id;
+  const tagId = tag_todo_item.tag_id;
+
   connectedModel.untagTodoItem(itemId, tagId, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage)
     } else {
       console.log('untag successful');
       res.send(result);
@@ -95,11 +100,13 @@ app.delete('/untagTodoItem', (req, res) => {
 });
 
 app.patch('/markCompleted', (req, res) => {
-  const itemId = 'parse the id from the request';
+  const tag_todo_item = req.body.tag_todo_item;
+  const itemId = tag_todo_item.item_id;
+
   connectedModel.markCompleted(itemId, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage)
     } else {
       console.log('mark completed successful');
       res.send(result);
