@@ -9,16 +9,19 @@ FROM Country;
 SELECT Name,
        max(population) AS population
 FROM city
-WHERE CountryCode IN
-    (SELECT Code
+WHERE CountryCode =
+    (SELECT DISTINCT Code
      FROM Country
      WHERE name = 'india');
 
      --OR
-SELECT city.Name, max(city.population) AS population
+SELECT name,
+       population
 FROM city
-JOIN country on country.code = city.CountryCode
-WHERE country.name = 'india';
+WHERE population =
+    (SELECT MAX(population)
+     FROM city
+     WHERE countrycode = "IND");
 
 -- 3. Find which countries do not have a capital.
 
@@ -88,7 +91,7 @@ GROUP BY gender;
 SELECT concat (floor(age/10)*10, "'s") AS Ages,
        count(*) AS 'Number of actors'
 FROM actors
-GROUP BY floor(age/10)*10
+GROUP BY Ages
 ORDER BY age;
 
 -- 3. Print the names and biographies of the actors in this format “ANNE HATHAWAY BIO: 1 golden globe”
