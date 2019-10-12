@@ -2,6 +2,7 @@
 
 const Express = require('express');
 const morgan = require('morgan');
+const mysql = require('mysql');
 
 const Db = require('./db');
 
@@ -44,3 +45,14 @@ Db.connect()
   })
 
   .catch(console.error);
+
+//to create db
+/*app.get('/create', (req, res) => {
+  let sql = 'CREATE DATABASE todo';
+  //Db içerisindeki connection varibale'ına ihtiyacım var
+  Db.connection.query(sql, (err, result) => {
+    if (err) throw err;
+    console.log(result);
+    res.send('database created');
+  });
+});
