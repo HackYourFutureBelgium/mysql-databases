@@ -1,26 +1,23 @@
+/* eslint-disable max-len */
 'use strict';
 
-const deserializeTodo = require('./deserializeTodo');
 const todoManager = require('../todoManager');
 const userManager = require('../userManager');
 
-function updateTodo(request, response) {
+function notMarkDone(request, response) {
   userManager.get(request.params.user_id)
     .then(() => {
-      return deserializeTodo(request, response);
-    })
-    .then(({ description }) => {
       const id = request.params.id;
-      return todoManager.update(request.params.user_id, id, description);
+      return todoManager.setNotMarkDone(request.params.user_id, id);
     })
     .then(todo => {
       response.status(200);
       response.json({ todo });
     })
     .catch(({ message, code }) => {
-      response.status(code === 'not-found' ? 404 : code ? 400 : 500);
+      response.status(code === 'bad-request' ? 400 : code === 'not-found' ? 404 : 500);
       response.json({ error: message });
     });
 }
 
-module.exports = updateTodo;
+module.exports = notMarkDone;

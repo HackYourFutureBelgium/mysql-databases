@@ -1,68 +1,115 @@
-const fs = require('fs').promises;
-const uuid = require('uuid/v4');
+/* eslint-disable max-len */
+'use strict';
 
-const DEFAULT_ENCODING = 'utf8';
+const uuid = require('uuid/v4');
+const Db = require('./db');
 
 class TodoManager {
-  constructor(filename) {
-    this._filename = filename;
-  }
-
   async usersTodos(userId) {
-    const todos = await this.read();
-    return todos.filter(t => t.user_id === userId);
-  }
+    const todos = await this.selectUserTodos(userId);
 
-  async create({ userId, description }) {
-    const todos = await this.read();
-    const todo = {
-      id: uuid(),
-      user_id: userId,
-      done: false,
-      description
-    };
-    todos.push(todo);
-    await this.write(todos);
-    return todo;
-  }
-
-  async update({ id, description }) {
-    const todos = await this.read();
-
-    const todo = todos.find(t => t.id === id);
-
-    if (!todo) {
-      const error = new Error(`To-do with ID ${id} does not exist`);
+    if (todos.length === 0) {
+      const error = new Error(`The user with ID introduced does not have activities TODO yet`);
       error.code = 'not-found';
       throw error;
     }
 
-    todo.description = description;
-    await this.write(todos);
-
-    return todo;
+    return todos;
   }
 
-  async delete({ id }) {
-    const todos = await this.read();
-    const filteredTodos = todos.filter(t => t.id !== id);
+  async getTodo(userid, id) {
+    const todos = await this.selectTodo(userid, id);
 
-    return this.write(filteredTodos);
+    if (todos[0] === undefined) {
+      const error = new Error(`Todo with ID ${id} does not exist or dont belong to this user.`);
+      error.code = 'not-found';
+      throw error;
+    }
+
+    return todos[0];
   }
 
-  read() {
-    return fs.readFile(this._filename, DEFAULT_ENCODING)
-      .then((contents) => JSON.parse(contents))
-      .catch((err) => {
-        if (err.code === 'ENOENT') return [];
-        else throw err;
-      });
+  async create(userId, description) {
+    const id = uuid();
+    await this.insertTodo(id, description, userId);
+
+    return this.getTodo(userId, id);
   }
 
-  write(todos) {
-    // third argument of stringify is nr of spaces indentation for readability
-    return fs.writeFile(this._filename, JSON.stringify(todos, null, 2));
+  async update(userId, id, description) {
+    await this.getTodo(userId, id);
+    await this.updateTodo(userId, id, description);
+
+    return this.getTodo(userId, id);
+  }
+
+  async delete(userId, id) {
+    await this.getTodo(userId, id);
+    await this.deleteTodo(userId, id);
+  }
+
+  async setMarkDone(userId, id) {
+    await this.getTodo(userId, id);
+    const todo = await this.selectTodoMarkState(id);
+    const state = todo[0].state;
+
+    if (state === 1) {
+      const error = new Error(`Todo selected is already with state done`);
+      error.code = 'bad-request';
+      throw error;
+    }
+    await this.updateTodoMark(userId, id);
+
+    return this.getTodo(userId, id);
+  }
+
+  async setNotMarkDone(userId, id) {
+    await this.getTodo(userId, id);
+    const todo = await this.selectTodoMarkState(id);
+    const state = todo[0].state;
+
+    if (state === 0) {
+      const error = new Error(`Todo selected is already with state not done`);
+      error.code = 'bad-request';
+      throw error;
+    }
+    await this.updateTodoNotMark(userId, id);
+
+    return this.getTodo(userId, id);
+  }
+
+  //  CRUD
+  selectTodo(userid, id) {
+    return Db.query(`SELECT * FROM activities WHERE id = '${id}' and user = '${userid}'`);
+  }
+
+  selectUserTodos(userId) {
+    return Db.query(`SELECT * FROM activities WHERE user = '${userId}'`);
+  }
+
+  selectTodoMarkState(id) {
+    return Db.query(`SELECT state FROM activities WHERE id = '${id}'`);
+  }
+
+  insertTodo(id, description, userId) {
+    return Db.query(`INSERT INTO activities (id,description,user) values ('${id}','${description}','${userId}')`);
+  }
+
+  updateTodo(userid, id, description) {
+    return Db.query(`UPDATE activities SET description= '${description}' WHERE id = '${id}' and user ='${userid}'`);
+  }
+
+  updateTodoMark(userid, id) {
+    return Db.query(`UPDATE activities SET state= 1 WHERE id = '${id}' and user='${userid}'`);
+  }
+
+  updateTodoNotMark(userid, id) {
+    return Db.query(`UPDATE activities SET state= 0 WHERE id = '${id}' and user='${userid}'`);
+  }
+
+  deleteTodo(userid, id) {
+    return Db.query(`DELETE FROM activities WHERE id = '${id}' and user='${userid}'`);
   }
 }
 
-module.exports = new TodoManager('./todos.json');
+module.exports = new TodoManager();

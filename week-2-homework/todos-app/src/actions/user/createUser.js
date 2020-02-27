@@ -8,17 +8,19 @@ function createUser(request, response) {
       const body = request.body;
 
       if (!body.username) {
-        throw new Error('username required to create user');
+        const error = new Error('username required to create user');
+        error.code = 'bad-request';
+        throw error;
       }
 
       return userManager.create(body.username);
     })
     .then(user => {
       response.status(201);
-      response.json({ todo: user });
+      response.json({ user });
     })
     .catch(({ code, message }) => {
-      response.status(code === 'already-exists' ? 404 : 500);
+      response.status(code === 'bad-request' ? 400 : code === 'conflict' ? 409 : 500);
       response.json({ error: message });
     });
 }

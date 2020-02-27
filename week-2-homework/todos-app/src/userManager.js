@@ -1,78 +1,101 @@
-const fs = require('fs').promises;
-const uuid = require('uuid/v4');
+/* eslint-disable max-len */
+'use strict';
 
-const DEFAULT_ENCODING = 'utf8';
+const uuid = require('uuid/v4');
+const Db = require('./db');
 
 class UserManager {
-  constructor(filename) {
-    this._filename = filename;
-  }
+  async getUsers() {
+    const users = await this.selectUsers();
 
-  async create(username) {
-    const users = await this.read();
-
-    let user = users.find(user => user.username === username);
-    if (user) {
-      const error = new Error(`${username} already exists`);
-      error.code = 'already-exists';
+    if (users.length === 0) {
+      const error = new Error(`Sorry!, We don't have users yet.`);
+      error.code = 'no-content';
       throw error;
     }
 
-    user = {
-      id: uuid(),
-      username
-    };
-    users.push(user);
-    await this.write(users);
-    return user;
+    return users;
+  }
+  async create(username) {
+    const id = uuid();
+    const user = await this.selectUser(username);
+
+    if (user.length) {
+      const error = new Error(`${username} already exists`);
+      error.code = 'conflict';
+      throw error;
+    }
+
+    await this.insertUser(username, id);
+    return this.get(id);
   }
 
   async get(id) {
-    const users = await this.read();
-    return users.find(user => user.id === id);
-  }
+    const users = await this.selectId(id);
+    const user = users.find(t => t.id === id);
 
-  async update(id, { description, birthday }) {
-    const users = await this.read();
-
-    let user = users.find(user => user.id === id);
-    if (!user) {
-      const error = new Error(`User with ID ${id} does not exist`);
+    if (user === undefined) {
+      const error = new Error(`User with ID introduced does not exist`);
       error.code = 'not-found';
       throw error;
     }
 
-    if (description !== undefined) {
-      user.description = description;
-    }
-
-    if (birthday !== undefined) {
-      user.birthday = birthday;
-    }
-
-    await this.write(users);
     return user;
   }
 
+  async update(id, { description, birthday }) {
+    await this.get(id);
+
+    if (description !== undefined && birthday !== undefined) {
+      await this.updateUser(id, description, birthday);
+    }
+    else if (birthday !== undefined) {
+      await this.updateUserBirthday(id, birthday);
+    }
+    else {
+      await this.updateUserDescription(id, description);
+    }
+
+    return this.get(id);
+  }
+
   async delete(id) {
-    const users = await this.read();
-    const filteredUsers = users.filter(user => user.id !== id);
-    return this.write(filteredUsers);
+    await this.get(id);
+    await this.deleteUser(id);
   }
 
-  read() {
-    return fs.readFile(this._filename, DEFAULT_ENCODING)
-      .then((contents) => JSON.parse(contents))
-      .catch((err) => {
-        if (err.code === 'ENOENT') return [];
-        else throw err;
-      });
+  //  CRUD
+  selectUsers() {
+    return Db.query(`SELECT * FROM users`);
   }
 
-  write(users) {
-    // third argument of stringify is nr of spaces indentation for readability
-    return fs.writeFile(this._filename, JSON.stringify(users, null, 2));
+  selectUser(username) {
+    return Db.query(`SELECT * FROM users WHERE username='${username}'`);
+  }
+
+  selectId(id) {
+    return Db.query(`SELECT * FROM users WHERE id='${id}'`);
+  }
+
+  insertUser(username, id) {
+    return Db.query(`INSERT INTO users (id, username) values ('${id}','${username}')`);
+  }
+
+  updateUserBirthday(id, birthday) {
+    return Db.query(`UPDATE users SET birthday = '${birthday}' WHERE id ='${id}'`);
+  }
+
+  updateUserDescription(id, description) {
+    return Db.query(`UPDATE users SET description = '${description}' WHERE id = '${id}'`);
+  }
+
+  updateUser(id, description, birthday) {
+    return Db.query(`UPDATE users SET birthday = '${birthday}', description = '${description}' WHERE id = '${id}'`);
+  }
+
+  deleteUser(id) {
+    return Db.query(`DELETE FROM users WHERE id = '${id}'`);
   }
 }
 
-module.exports = new UserManager('./users.json');
+module.exports = new UserManager();
