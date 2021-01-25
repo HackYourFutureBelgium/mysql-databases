@@ -4,21 +4,30 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const connectedModel = require('./program.js');
+const {
+  validateTodoItem,
+  validateTodoTag,
+  validateTodoId
+} = require('./validate');
 
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-  res.send({ msg: 'hellow!' });
+  res.send({
+    msg: 'hellow!'
+  });
 })
 
 app.get('/:id', (req, res) => {
-  const id = 'parse the description from the request';
+  const id = req.params.id;
   connectedModel.read(id, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage);
     } else {
       console.log('create successful');
       res.send(result);
@@ -27,11 +36,21 @@ app.get('/:id', (req, res) => {
 });
 
 app.post('/', (req, res) => {
-  const description = 'parse the description from the request';
-  connectedModel.create(description, (err, result) => {
+  const valid = validateTodoItem(req.body);
+  if (!valid) {
+    return res.status(400).send('todo, description and id are required')
+  }
+
+  const {
+    id
+  } = req.body.todo;
+  const {
+    description
+  } = req.body.todo;
+  connectedModel.create(id, description, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage);
     } else {
       console.log('create successful');
       res.send(result);
@@ -40,12 +59,18 @@ app.post('/', (req, res) => {
 });
 
 app.patch('/', (req, res) => {
-  const id = 'parse the id from the request';
-  const description = 'parse the description from the request';
+  const valid = validateTodoItem(req.body);
+  if (!valid) {
+    return res.status(400).send('todo, description and id are require')
+  }
+
+  const todo = req.body.todo;
+  const id = todo.id;
+  const description = todo.description;
   connectedModel.update(id, description, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage)
     } else {
       console.log('update successful');
       res.send(result);
@@ -54,11 +79,16 @@ app.patch('/', (req, res) => {
 });
 
 app.delete('/', (req, res) => {
-  const id = 'parse the id from the request';
+  const valid = validateTodoId(req.body);
+  if (!valid) {
+    return res.status(400).send('todo and id are required')
+  }
+
+  const id = req.body.todo.id;
   connectedModel.delete(id, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage)
     } else {
       console.log('delete successful');
       res.send(result);
@@ -67,12 +97,19 @@ app.delete('/', (req, res) => {
 });
 
 app.post('/tagTodoItem', (req, res) => {
-  const itemId = 'parse the id from the request';
-  const tagId = 'parse the id from the request';
+  const valid = validateTodoTag(req.body);
+  if (!valid) {
+    return res.status(400).send('tag_todo_item, item_id and tag_id are required')
+  }
+
+  const tag_todo_item = req.body.tag_todo_item;
+  const itemId = tag_todo_item.item_id;
+  const tagId = tag_todo_item.tag_id;
+
   connectedModel.tagTodoItem(itemId, tagId, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage)
     } else {
       console.log('tag successful');
       res.send(result);
@@ -81,12 +118,19 @@ app.post('/tagTodoItem', (req, res) => {
 });
 
 app.delete('/untagTodoItem', (req, res) => {
-  const itemId = 'parse the id from the request';
-  const tagId = 'parse the id from the request';
+  const valid = validateTodoTag(req.body);
+  if (!valid) {
+    return res.status(400).send('tag_todo_item, item_id and tag_id are required');
+  }
+
+  const tag_todo_item = req.body.tag_todo_item;
+  const itemId = tag_todo_item.item_id;
+  const tagId = tag_todo_item.tag_id;
+
   connectedModel.untagTodoItem(itemId, tagId, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage)
     } else {
       console.log('untag successful');
       res.send(result);
@@ -95,11 +139,17 @@ app.delete('/untagTodoItem', (req, res) => {
 });
 
 app.patch('/markCompleted', (req, res) => {
-  const itemId = 'parse the id from the request';
+  const valid = validateTodoId(req.body);
+  if (!valid) {
+    return res.status(400).send('todo and id are required')
+  }
+
+  const itemId = req.body.todo.id;
+
   connectedModel.markCompleted(itemId, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      res.send(err.sqlMessage)
     } else {
       console.log('mark completed successful');
       res.send(result);
