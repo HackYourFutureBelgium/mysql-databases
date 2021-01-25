@@ -5,7 +5,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'hyfuser',
   password: 'hyfpassword',
-  database: 'hyf_c5_w1_cars'
+  database: 'user_todo',
 });
 
 function connect() {
@@ -23,19 +23,22 @@ function query(queryString, params) {
   return new Promise((resolve, reject) => {
     console.log(queryString, params);
 
-    connection.query({
-      sql: queryString,
-      values: params
-    }, function(error, results) {
-      if (error) {
-        return reject(error);
-      }
-      resolve(results);
-    });
+    connection.query(
+      {
+        sql: queryString,
+        values: params,
+      },
+      function(error, results) {
+        if (error) {
+          return reject(error);
+        }
+        resolve(results);
+      },
+    );
   });
 }
 
 module.exports = {
   connect,
-  query
+  query,
 };

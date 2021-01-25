@@ -6,18 +6,9 @@ const morgan = require('morgan');
 const Db = require('./db');
 
 // import our CRUD actions
-const {
-  createUser,
-  updateUser,
-  deleteUser
-} = require('./actions/user');
+const { createUser, updateUser, deleteUser } = require('./actions/user');
 
-const {
-  createTodo,
-  readTodos,
-  updateTodo,
-  deleteTodo
-} = require('./actions');
+const { createTodo, readTodos, updateTodo, deleteTodo } = require('./actions');
 
 const PORT = 3030;
 const TODOS = 'todos';
