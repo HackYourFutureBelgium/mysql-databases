@@ -11,70 +11,104 @@ class TodoModel {
   // Loads all the TODOs in the database
   load(callback) {
     const selectTodoItems = "SELECT * FROM todo_items";
-    this.dbConnection.query(selectTodoItems, function (err, results, fields) {
+    this.dbConnection.query(selectTodoItems, function (err, results, ) {
       if (err) {
         callback(err);
         return;
       }
-
       callback(null, results);
     });
   }
 
   read(id, callback) {
     // Write code and query to return TODO by id
-
-    // placeholder to make sure your routes are working
-    callback(null, { id })
+    const selectById = "SELECT * FROM todo_items where id = " + id;
+    this.dbConnection.query(selectById, function (err, results) {
+      if (err) {
+        callback(err);
+        return;
+      }
+      callback(null, results);
+    })
   }
 
-  create(description, callback) {
+  create(description, userId, callback) {
     // Write code and query to create a new TODO item
-
-    // placeholder to make sure your routes are working
-    callback(null, { description })
+    const createTodo = `INSERT INTO todo_items (text, user_id) VALUES ('${description}', '${userId}')`;
+    this.dbConnection.query(createTodo, function (err, results) {
+      if (err) {
+        callback(err);
+        return;
+      }
+      callback(null, results);
+    })
   }
 
   update(id, description, callback) {
     // Write code and query to update and existing TODO item
-
-    // placeholder to make sure your routes are working
-    callback(null, { id, description })
+    const updateTodo = `UPDATE todo_items SET text = '${description}' WHERE id = ${id}`;
+    this.dbConnection.query(updateTodo, function (err, results) {
+      if (err) {
+        callback(err);
+        return;
+      }
+      callback(null, results);
+    })
   }
 
   delete(id, callback) {
     // Write code and query to delete an existing TODO item
-
-    // placeholder to make sure your routes are working
-    callback(null, { id })
+    const deleteTodo = `DELETE FROM todo_items WHERE id = ${id}`;
+    this.dbConnection.query(deleteTodo, function (err, results) {
+      if (err) {
+        callback(err);
+        return;
+      }
+      callback(null, results);
+    })
   }
 
-  tagTodoItem(todoItemId, tagId, callback) {
+  tagTodoItem(itemId, tagId, callback) {
     // Write code and query add a tag to a TODO item
-
-    // placeholder to make sure your routes are working
-    callback(null, { todoItemId, tagId })
+    const tagItem = `INSERT INTO todo_item_tag(todo_item_id, tag_id) VALUES('${itemId}', '${tagId}')`;
+    this.dbConnection.query(tagItem, function (err, results) {
+      if (err) {
+        callback(err);
+        return;
+      }
+      callback(null, results);
+    })
   }
 
-  untagTodoItem(todoItemId, tagId, callback) {
+  untagTodoItem(itemId, tagId, callback) {
     // Write code and query remove a tag from a TODO item
-
-    // placeholder to make sure your routes are working
-    callback(null, { todoItemId, tagId })
+    const untagItem = `DELETE FROM todo_item_tag WHERE todo_item_id='${itemId}' AND tag_id = '${tagId}'`;
+    this.dbConnection.query(untagItem, function (err, results) {
+      if (err) {
+        callback(err);
+        return;
+      }
+      callback(null, results);
+    })
   }
 
-  markCompleted(todoItemId, callback) {
+  markCompleted(itemId, callback) {
     // Write code to mark a TODO item as completed
-
-    // placeholder to make sure your routes are working
-    callback(null, { todoItemId });
+    const markAsComplete = `UPDATE todo_items SET is_completed = 1 WHERE id = '${itemId}'`;
+    this.dbConnection.query(markAsComplete, function (err, results) {
+      if (err) {
+        callback(err);
+        return;
+      }
+      callback(null, results);
+    })
   }
 }
 
 const dbConnection = mysql.createConnection({
   host: 'localhost',
-  user: 'root',
-  password: '',
+  user: 'hyfclass4',
+  password: '1234',
   database: 'todo_app'
 });
 
@@ -85,15 +119,6 @@ dbConnection.connect(function (err) {
   }
 
   console.log('connected as id ' + dbConnection.threadId);
-
-  const todoModel = new TodoModel(dbConnection);
-  todoModel.load(function (err, todoItems) {
-    if (err) {
-      console.log("error loading TODO items:", err);
-    }
-
-    console.log("existing todo items:", todoItems);
-  });
 });
 
 const connectedModel = new TodoModel(dbConnection);

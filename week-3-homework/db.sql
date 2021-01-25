@@ -25,7 +25,7 @@ CREATE TABLE tags (
 );
 
 CREATE TABLE todo_item_tag(
-    todo_item_id INT NOT NULL,
+    todo_item_id INT NOT NULL AUTO_INCREMENT,
     tag_id INT NOT NULL,
     PRIMARY KEY (todo_item_id, tag_id)
 );

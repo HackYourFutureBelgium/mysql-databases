@@ -48,8 +48,8 @@ class TodoModel {
 
 const dbConnection = mysql.createConnection({
     host     : 'localhost',
-    user     : 'root',
-    password : '',
+    user     : 'hyfclass4',
+    password : '1234',
     database : 'todo_app'
 });
 

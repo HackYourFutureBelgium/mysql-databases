@@ -10,99 +10,112 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-  res.send({ msg: 'hellow!' });
+  connectedModel.load((err, result) => {
+    if (err) {
+      console.error(err);
+      console.log(err);
+    } else {
+      res.send(result);
+    }
+  });
 })
 
 app.get('/:id', (req, res) => {
-  const id = 'parse the description from the request';
+  const id = req.params.id;
   connectedModel.read(id, (err, result) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      console.log(err);
     } else {
-      console.log('create successful');
+      console.log(result + 'aa');
       res.send(result);
     }
   })
 });
 
 app.post('/', (req, res) => {
-  const description = 'parse the description from the request';
-  connectedModel.create(description, (err, result) => {
+  const description = req.body.description;
+  const userId = req.body.user_id;
+  connectedModel.create(description, userId, (err) => {
     if (err) {
       console.error(err);
-      // send a helpful error response!
+      console.log(err);
     } else {
-      console.log('create successful');
+      console.log('create');
       res.send(result);
     }
   })
 });
 
 app.patch('/', (req, res) => {
-  const id = 'parse the id from the request';
-  const description = 'parse the description from the request';
+  const id = req.body.id;
+  const description = req.body.description;
   connectedModel.update(id, description, (err, result) => {
     if (err) {
       console.error(err);
+      console.log(err);
       // send a helpful error response!
     } else {
-      console.log('update successful');
-      res.send(result);
+      console.log('update');
+      res.send(id + ' updated');
     }
   })
 });
 
 app.delete('/', (req, res) => {
-  const id = 'parse the id from the request';
+  const id = req.body.id;
   connectedModel.delete(id, (err, result) => {
     if (err) {
       console.error(err);
+      console.log(err);
       // send a helpful error response!
     } else {
       console.log('delete successful');
-      res.send(result);
+      res.send(id + ' deleted');
     }
   })
 });
 
 app.post('/tagTodoItem', (req, res) => {
-  const itemId = 'parse the id from the request';
-  const tagId = 'parse the id from the request';
+  const itemId = req.body.id;
+  const tagId = req.body.tag_id;
   connectedModel.tagTodoItem(itemId, tagId, (err, result) => {
     if (err) {
       console.error(err);
+      console.log(err);
       // send a helpful error response!
     } else {
-      console.log('tag successful');
-      res.send(result);
+      console.log('tag todo');
+      res.send('todo tagged');
     }
   })
 });
 
 app.delete('/untagTodoItem', (req, res) => {
-  const itemId = 'parse the id from the request';
-  const tagId = 'parse the id from the request';
+  const itemId = req.body.id;
+  const tagId = req.body.tag_id;
   connectedModel.untagTodoItem(itemId, tagId, (err, result) => {
     if (err) {
       console.error(err);
+      console.log(err);
       // send a helpful error response!
     } else {
-      console.log('untag successful');
-      res.send(result);
+      console.log('untag todo');
+      res.send('todo untagged');
     }
   })
 });
 
 app.patch('/markCompleted', (req, res) => {
-  const itemId = 'parse the id from the request';
+  const itemId = req.body.id;
   connectedModel.markCompleted(itemId, (err, result) => {
     if (err) {
       console.error(err);
+      console.log(err);
       // send a helpful error response!
     } else {
-      console.log('mark completed successful');
-      res.send(result);
+      console.log('mark');
+      res.send('todo marked as untagged');
     }
   })
 });
